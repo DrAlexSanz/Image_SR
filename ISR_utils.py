@@ -91,7 +91,7 @@ def make_val_set(parent_val, val_HR, val_LR):
         path_source = "/content/drive/MyDrive/Image-SR/train/LR/0" + str(i) + ".png"
         shutil.move(path_source, val_LR)
     
-    # I don't really know if I should use return None or just return. I think this is ok. Anyway I don't really want to return anything, just operate.
+    #I don't really want to return anything, just operate.
     return
     
     
