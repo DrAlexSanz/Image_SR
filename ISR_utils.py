@@ -174,26 +174,41 @@ def rename(path):
     return
     
     
-def resize_input(height, width, path):
+def resize_imgs_low_res(path_source, path_target, naming):
+    
     """
-    This function takes the LR images and resizes them to the desired input. For a SR autoencoder the input and output should be the same picture, but the input should have lower resolution.
-    Does not return anything.
-    I can do it using flow_from_directory and do everything on the fly but that requires doing it more times when I don't want to perform data augmentation.
-    I can always not use this function in the future.
+    Resize the LR images from 1020x768 to 2040x1356
+    Try to save them in other folders to do it once
+    naming = "train", "test" or "val"
     """
+    if naming == "train":
+        start = 1
+    elif naming == "test":
+        start = 801
+    elif naming == "val":
+        start = 870
+
+    if os.path.isdir(path_target):  
+        shutil.rmtree(path_target)
     
-    # Quick reminder
-    # path_test = "/content/Image-SR/test/LR"
-    # path_train = "/content/Image-SR/train/LR"
-    # path_val = "/content/Image-SR/val/LR"
+    os.mkdir(path_target)
+
+    file_list = glob.glob(path_source + "/*.png")
+    file_list.sort()
+    x_list = []
+
+    os.chdir(path_target)
     
-    os.chdir(path)
-    
-    for fname in os.listdir("."):
-        X_LR = Image.open(fname)
-        X_LR = X_LR.resize((width, height), Image.BILINEAR)
-        X_LR.save(path + "/" + fname, format = "png")
-    
-    
+    # I don't care about loop vs. list comprehension because I'm dominated by the open/save time    
+    for file in file_list:
+        a = Image.open(file)
+        b = a.resize((2040, 1368), resample = Image.NEAREST) # Upsample with bilinear, to "spoil" the image a bit. I want to have aliasing.
+        start = str(start)
+        start = "0" * (4-len(start)) + start
+        name = start + ".png"
+        b.save(name)
+        start = int(start)
+        start = start + 1
+        start = str(start)
     
     return
